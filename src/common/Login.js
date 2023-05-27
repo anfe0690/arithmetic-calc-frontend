@@ -1,37 +1,29 @@
 import { useState } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 import './Login.css';
 
-// TODO: Clear localstorage on error
-export default function Login({ setLoggedIn }) {
-  const ax = axios.create({
-    baseURL: 'http://localhost:8080/',
-    withCredentials: true,
-  });
-
+export default function Login({ setPageMessage, setLoggedIn }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loginMessage, setLoginMessage] = useState('');
-  const [loginMessageClass, setLoginMessageClass] = useState('success-message');
 
   function handleLogIn(e) {
     e.preventDefault()
 
     console.log('Sending log in request...')
-    ax.post('log-in', {
+    axios.post('log-in', {
         username: username,
         password: password
       })
       .then(function (response){
         const message = 'Log in request successful'
         console.log(message)
-        setLoginMessage(message)
-        setLoginMessageClass('alert alert-success')
+        setPageMessage({ message: message, type: 'success' })
 
         console.log(response.data)
 
-        localStorage.setItem('user', response.data)
+        Cookies.set('user', JSON.stringify(response.data), { expires: 1, sameSite: 'strict' })
         setLoggedIn(true)
       })
       .catch(function (error){
@@ -41,9 +33,8 @@ export default function Login({ setLoggedIn }) {
         }
 
         console.log(errorMessage)
-        setLoginMessage(errorMessage)
-        setLoginMessageClass('alert alert-danger')
-      })
+        setPageMessage({ message: errorMessage, type: 'failure' })
+      });
   }
 
   return (
@@ -66,8 +57,6 @@ export default function Login({ setLoggedIn }) {
           <div className="d-grid gap-2">
             <button type="submit" className="btn btn-primary">Log in</button>
           </div>
-
-          { loginMessage ? (<div className={'login-message ' + loginMessageClass}>{loginMessage}</div>) : null }
         </form>
       </div>
     </div>
