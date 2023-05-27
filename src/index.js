@@ -1,19 +1,18 @@
-import {React, useState} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 
-import { UserContext } from './UserContext';
-import App from './App';
+import Root from './Root';
 import ErrorPage from './ErrorPage';
 import RequestOperation from './request-operation/RequestOperation';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App/>,
+    element: <Root/>,
     errorElement: <ErrorPage/>
   },
   {
@@ -23,12 +22,8 @@ const router = createBrowserRouter([
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-const [user, setUser] = useState(null);
-
 root.render(
   <React.StrictMode>
-    <UserContext.Provider value={{ user: user, setUser: setUser }}>
-      <RouterProvider router={router} />
-    </UserContext.Provider>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
