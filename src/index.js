@@ -9,10 +9,10 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 
 import Root from './Root';
 import ErrorPage from './ErrorPage';
-import RequestOperation from './request-operation/RequestOperation';
+import PerformOperation from './perform-operation/PerformOperation';
 
 
-axios.defaults.baseURL = 'http://localhost:8080/'
+axios.defaults.baseURL = 'http://localhost:8080/v1/'
 axios.defaults.withCredentials = true
 
 const router = createBrowserRouter([
@@ -22,14 +22,15 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage/>,
   },
   {
-    path: "/request-operation",
+    path: "/perform-operation",
     loader: async () => {
       if (!Cookies.get('user')) {
+        console.log('There is not session. Redirecting to root.')
         return redirect('/');
       }
       return null;
     },
-    element: <RequestOperation/>
+    element: <PerformOperation/>
   }
 ]);
 

@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className="col">
       <h1>Arithmetic Calculator</h1>
-      <p>Welcome {user.name}. Here you can request new operations: <Link to={`/request-operation`}>Request Operation</Link></p>
+      <p>Welcome {user.name}. Here you can perform operations: <Link to={`/perform-operation`}>Perform Operation</Link></p>
     </div>
   )
 }

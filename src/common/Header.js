@@ -33,8 +33,8 @@ export default function Header({ setPageMessage, loggedIn, setLoggedIn }) {
             {loggedIn ? (
               <>
                 <li className="nav-item">
-                  <NavLink to={`/request-operation`}
-                      className={ ({ isActive, isPending }) => isActive ? 'nav-link active' : 'nav-link' }>Request Operation</NavLink>
+                  <NavLink to={`/perform-operation`}
+                      className={ ({ isActive, isPending }) => isActive ? 'nav-link active' : 'nav-link' }>Perform Operation</NavLink>
                 </li>
                 <li className="nav-item">
                   <NavLink to={`/records`}
@@ -43,7 +43,12 @@ export default function Header({ setPageMessage, loggedIn, setLoggedIn }) {
               </>
             ) : null}
           </ul>
-          {loggedIn ? (<button className="btn btn-secondary ms-auto" onClick={handleLogOut}>Log out</button>) : null }
+          {loggedIn ? (
+            <>
+              <span class="navbar-text ms-auto me-3">{JSON.parse(Cookies.get('user')).name}</span>
+              <button className="btn btn-secondary" onClick={handleLogOut}>Log out</button>
+            </>
+          ) : null }
         </div>
       </div>
     </nav>

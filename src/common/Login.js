@@ -9,7 +9,7 @@ export default function Login({ setPageMessage, setLoggedIn }) {
   const [password, setPassword] = useState('');
 
   function handleLogIn(e) {
-    e.preventDefault()
+    e.preventDefault();
 
     console.log('Sending log in request...')
     axios.post('log-in', {
@@ -29,7 +29,12 @@ export default function Login({ setPageMessage, setLoggedIn }) {
       .catch(function (error){
         let errorMessage = 'Error logging in: ' + error.message
         if (error.response) {
-          errorMessage += ' - ' + error.response.data
+          if (error.response.data && error.response.data.error) {
+            errorMessage += ' - ' + error.response.data.error
+          }
+          else {
+            errorMessage += ' - ' + error.response.data
+          }
         }
 
         console.log(errorMessage)
