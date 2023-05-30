@@ -10,10 +10,12 @@ export default function Header({ setPageMessage, loggedIn, setLoggedIn }) {
     axios.delete('log-out')
       .then(function (response){
         console.log('Logged out');
-        setPageMessage({ message: 'Logged out', type: 'success' })
+
         Cookies.remove('user');
-        setLoggedIn(false);
         navigate('/');
+
+        setPageMessage({ message: 'Logged out', type: 'success' })
+        setLoggedIn(false);
       })
       .catch(function (error){
         console.log(error.message);
@@ -45,7 +47,7 @@ export default function Header({ setPageMessage, loggedIn, setLoggedIn }) {
           </ul>
           {loggedIn ? (
             <>
-              <span class="navbar-text ms-auto me-3">{JSON.parse(Cookies.get('user')).name}</span>
+              <span className="navbar-text ms-auto me-3">{JSON.parse(Cookies.get('user')).name}</span>
               <button className="btn btn-secondary" onClick={handleLogOut}>Log out</button>
             </>
           ) : null }

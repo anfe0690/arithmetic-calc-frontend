@@ -9,7 +9,7 @@ import PageMessage from './common/PageMessage.js';
 
 
 export default function Root() {
-  const [loggedIn, setLoggedIn] = useState(Cookies.get('user'));
+  const [loggedIn, setLoggedIn] = useState(Cookies.get('user') !== undefined);
   const [pageMessage, setPageMessage] = useState(null);
 
   return (
