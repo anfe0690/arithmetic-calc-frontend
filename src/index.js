@@ -12,7 +12,7 @@ import ErrorPage from './ErrorPage';
 import PerformOperation from './perform-operation/PerformOperation';
 
 
-axios.defaults.baseURL = 'http://localhost:8080/v1/'
+axios.defaults.baseURL = process.env.REACT_APP_BACKEND_HOST + '/v1/'
 axios.defaults.withCredentials = true
 
 const router = createBrowserRouter([

@@ -130,15 +130,27 @@ export default function PerformOperation() {
         }
       })
       .then(function (response){
-        const message = 'Operation successful'
-        console.log(message)
-        setPageMessage({ message: message, type: 'success' })
+        const message = 'Operation successful';
+        console.log(message);
+        setPageMessage({ message: message, type: 'success' });
 
-        console.log(response.data)
-        setResult(response.data)
+        console.log(response.data);
+        setCurrentBalance(response.data.balance);
+        setResult(response.data.result);
+
+        let user = JSON.parse(Cookies.get('user'));
+        user.balance = response.data.balance;
+        Cookies.set('user', JSON.stringify(user), { expires: 1, sameSite: 'strict' });
       })
       .catch(function (error){
-        let errorMessage = 'Error logging in: ' + error.message
+        if (error.response.status === 401) {
+          console.log('Error with session. Redirecting to root.');
+          Cookies.remove('user');
+          navigate('/');
+          return;
+        }
+
+        let errorMessage = 'Error performing operation: ' + error.message
         if (error.response) {
           if (error.response.data && error.response.data.error) {
             errorMessage += ' - ' + error.response.data.error
