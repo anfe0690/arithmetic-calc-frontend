@@ -15,6 +15,7 @@ export default function Records() {
   const [records, setRecords] = useState([]);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [pageNumber, setPageNumber] = useState(0);
+  const [sortBy, setSortBy] = useState([]);
 
   const recordsHtml = records.map(r => (
     <tr key={r.id}>
@@ -28,17 +29,22 @@ export default function Records() {
 
   const pagesIndexes = Array.from(Array(pageNumber+1).keys());
   const pagesButtons = pagesIndexes.map(i => <li key={i} className={i === pageNumber ? "page-item active" : "page-item"}>
-      <button className="page-link" data-page={i} onClick={e => setPageNumber(parseInt(e.target.dataset.page))}>{i+1}</button>
+      <button className="page-link" data-page={i} onClick={e => setPageNumber(parseInt(e.currentTarget.dataset.page))}>{i+1}</button>
     </li> );
 
   useEffect(() => {
     console.log('Loading records');
     let ignore = false;
+
+    let params = new URLSearchParams();
+    params.append('recordsPerPage', recordsPerPage);
+    params.append('page', pageNumber);
+    sortBy.forEach(sb => {
+      params.append('sortBy', sb.name);
+      params.append('sortDirection', sb.direction)
+    });
     axios.get('records', {
-        params: {
-          recordsPerPage: recordsPerPage,
-          page: pageNumber
-        }
+        params: params
       })
       .then(function (response){
         if (!ignore) {
@@ -72,12 +78,48 @@ export default function Records() {
     return () => {
       ignore = true;
     };
-  }, [recordsPerPage, pageNumber, navigate]);
+  }, [recordsPerPage, pageNumber, sortBy, navigate]);
 
   function filterNonNumberCharacters(e) {
     if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
       e.preventDefault();
     }
+  }
+
+  function calculateCaret(name) {
+    for (let i=0; i<sortBy.length; i++) {
+      if (sortBy[i].name === name) {
+        return sortBy[i].direction === 'ASC' ? <i className="bi bi-caret-up-fill"></i> : <i className="bi bi-caret-down-fill"></i>;
+      }
+    }
+    return null;
+  }
+
+  function setSortByAndSortDirection(e) {
+    let sortByName = e.currentTarget.dataset.name;
+    console.log('Sort by ' + sortByName);
+
+    let foundIndex = -1;
+    let newSortBy = [];
+    for (let i=0; i<sortBy.length; i++) {
+      newSortBy.push(sortBy[i]);
+
+      if (sortBy[i].name === sortByName) {
+        foundIndex = i;
+      }
+    }
+
+    if (foundIndex === -1) {
+      newSortBy.push({ name: sortByName, direction: 'ASC' });
+    }
+    else if (newSortBy[foundIndex].direction === 'ASC') {
+      newSortBy[foundIndex].direction = 'DESC';
+    }
+    else {
+      newSortBy.splice(foundIndex, 1);
+    }
+
+    setSortBy(newSortBy);
   }
 
   return (
@@ -94,11 +136,11 @@ export default function Records() {
 
         <div className="row mb-3">
           <div className="col-auto">
-            <label for="records-per-page" className="col-form-label">Records per page</label>
+            <label htmlFor="records-per-page" className="col-form-label">Records per page</label>
           </div>
           <div className="col-auto">
             <input id="records-per-page" className="form-control" type="number" onKeyDown={filterNonNumberCharacters}
-                onChange={e => setRecordsPerPage(e.target.value)} value={recordsPerPage}></input>
+                onChange={e => setRecordsPerPage(e.currentTarget.value)} value={recordsPerPage}></input>
           </div>
         </div>
 
@@ -106,11 +148,11 @@ export default function Records() {
           <table className="table table-bordered table-striped">
             <thead>
               <tr>
-                <th scope="col">Operation</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Balance</th>
-                <th scope="col">Result</th>
-                <th scope="col">Date</th>
+                <th scope="col" role="button" data-name="type" onClick={setSortByAndSortDirection}>Operation {calculateCaret('type')}</th>
+                <th scope="col" role="button" data-name="amount" onClick={setSortByAndSortDirection}>Amount {calculateCaret('amount')}</th>
+                <th scope="col" role="button" data-name="userBalance" onClick={setSortByAndSortDirection}>Balance {calculateCaret('userBalance')}</th>
+                <th scope="col" role="button" data-name="operationResponse" onClick={setSortByAndSortDirection}>Result {calculateCaret('operationResponse')}</th>
+                <th scope="col" role="button" data-name="date" onClick={setSortByAndSortDirection}>Date {calculateCaret('date')}</th>
               </tr>
             </thead>
             <tbody>{recordsHtml}</tbody>
