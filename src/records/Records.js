@@ -16,6 +16,7 @@ export default function Records() {
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [pageNumber, setPageNumber] = useState(0);
   const [sortBy, setSortBy] = useState([]);
+  const [search, setSearch] = useState('');
 
   const recordsHtml = records.map(r => (
     <tr key={r.id}>
@@ -43,6 +44,10 @@ export default function Records() {
       params.append('sortBy', sb.name);
       params.append('sortDirection', sb.direction)
     });
+    if (search.length >= 3) {
+      params.append('search', search);
+    }
+
     axios.get('records', {
         params: params
       })
@@ -78,7 +83,7 @@ export default function Records() {
     return () => {
       ignore = true;
     };
-  }, [recordsPerPage, pageNumber, sortBy, navigate]);
+  }, [recordsPerPage, pageNumber, sortBy, search, navigate]);
 
   function filterNonNumberCharacters(e) {
     if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
@@ -128,7 +133,7 @@ export default function Records() {
         <title>Records - Arithmetic Calculator</title>
       </Helmet>
       <Header setPageMessage={setPageMessage} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>
-      <div className="container perform-operation">
+      <div className="container records">
         <PageMessage pageMessage={pageMessage} setPageMessage={setPageMessage} />
         <div className="row">
           <h1>Records</h1>
@@ -140,8 +145,22 @@ export default function Records() {
           </div>
           <div className="col-auto">
             <input id="records-per-page" className="form-control" type="number" onKeyDown={filterNonNumberCharacters}
-                onChange={e => setRecordsPerPage(e.currentTarget.value)} value={recordsPerPage}></input>
+                onChange={e => setRecordsPerPage(Math.max(parseInt(e.currentTarget.value), 1))} value={recordsPerPage}></input>
           </div>
+        </div>
+
+        <div className="row mb-3 align-items-center">
+          <div className="col-auto">
+            <label htmlFor="search" className="col-form-label">Search</label>
+          </div>
+          <div className="col-auto">
+            <input id="search" className="form-control" type="text"
+                onChange={e => e.currentTarget.value.length >= 3 ? setSearch(e.currentTarget.value) : setSearch('')}></input>
+          </div>
+          <div class="col-auto">
+            <span id="searchHelp" class="form-text">Search in Operation, Result, and Date columns. Minimum 3 characters.</span>
+          </div>
+
         </div>
 
         <div className="row">
