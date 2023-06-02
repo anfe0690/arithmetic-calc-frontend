@@ -1,0 +1,9 @@
+[Unit]
+Description=Frontend
+
+[Service]
+ExecStart=/usr/bin/serve -s /home/ubuntu/build
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
